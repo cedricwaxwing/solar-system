@@ -25,6 +25,7 @@
     "@react-three/postprocessing": "^2.15.11",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.17",
+    "clsx": "^2.1.0",
     "lamina": "^1.1.23",
     "postcss": "^8.4.33",
     "r3f-perf": "^7.1.2",
