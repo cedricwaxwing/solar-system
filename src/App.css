@@ -1,0 +1,25 @@
+/* @font-face {
+  font-family: "Avenir";
+  src: url("/assets/avenir-next.ttc");
+} */
+@font-face {
+  font-family: "Obviously";
+  src: url("/assets/Obviously-Wide_Medium.woff");
+}
+
+canvas {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: clip;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: "'Avenir', sans-serif";
+  color: white;
+}
+
+body > iframe {
+  display: none;
+}
