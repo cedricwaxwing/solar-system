@@ -1,6 +1,6 @@
 import { Icosahedron, Resize } from "@react-three/drei";
 import { useRef, useState, useEffect } from "react";
-import { DoubleSide, TextureLoader } from "three";
+import { FrontSide, TextureLoader } from "three";
 import FakeGlowMaterial from "../FakeGlowMaterial";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useFeatures } from "../common/FeaturesProvider";
@@ -9,6 +9,8 @@ const Planet = () => {
   const ref = useRef();
   const { currentPlanet } = useFeatures();
   const [texture, setTexture] = useState(null);
+  const [bumpMap, setBumpMap] = useState(null);
+  const [specularMap, setSpecularMap] = useState(null);
   const { viewport } = useThree();
   const vMin = Math.min(viewport.height, viewport.width);
 
@@ -21,16 +23,26 @@ const Planet = () => {
 
   useEffect(() => {
     if (currentPlanet) {
+      const planetName = currentPlanet.name.toLowerCase();
       const loader = new TextureLoader();
+
+      // Load main texture
       loader
-        .loadAsync(`/assets/textures/${currentPlanet.name.toLowerCase()}.jpg`)
-        .then((loadedTexture) => {
-          setTexture(loadedTexture);
-        })
-        .catch((error) => {
-          console.error("Error loading texture:", error);
-          setTexture(null);
-        });
+        .loadAsync(`/assets/textures/${planetName}.jpg`)
+        .then(setTexture)
+        .catch((error) => console.error("Error loading main texture:", error));
+
+      // Attempt to load bump map
+      loader
+        .loadAsync(`/assets/textures/${planetName}_bump.jpg`)
+        .then(setBumpMap)
+        .catch(() => setBumpMap(null)); // Fail silently
+
+      // Attempt to load specular map
+      loader
+        .loadAsync(`/assets/textures/${planetName}_spec.jpg`)
+        .then(setSpecularMap)
+        .catch(() => setSpecularMap(null)); // Fail silently
     }
   }, [currentPlanet]);
 
@@ -44,9 +56,15 @@ const Planet = () => {
         position={[0, 0, 0]}
         rotation={[0, -0.3, 0]}>
         {currentPlanet.name === "sun" ? (
-          <meshBasicMaterial map={texture} side={DoubleSide} />
+          <meshBasicMaterial map={texture} side={FrontSide} />
         ) : (
-          <meshStandardMaterial bumpMap={texture} bumpScale={1} map={texture} />
+          <meshPhysicalMaterial
+            bumpMap={bumpMap ? bumpMap : texture}
+            bumpScale={bumpMap ? 10 : 1}
+            map={texture}
+            toneMapped={false}
+            specularIntensityMap={specularMap}
+          />
         )}
       </Icosahedron>
       {currentPlanet.name === "sun" && (

@@ -1,36 +1,33 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { registerFeatures } from "../fxhash";
-import { random_choice } from "./utils";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { usePlanetData } from "../hooks/usePlanets";
 
 export const FeaturesContext = createContext(null);
 
-const themes = {
-  Minimal: {
-    lighting: ["#eaecd2", "#fbf7e0"],
-    colors: ["red", "green", "blue"],
-  },
-};
-
 const FeaturesProvider = ({ children }) => {
-  const choice = useMemo(() => random_choice(Object.keys(themes)), []);
-  const lighting = useMemo(() => random_choice(themes[choice].lighting), []);
-  const [currentPlanet, setCurrentPlanet] = useState("Jupiter");
+  const getPlanetFromURL = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get("planet") || "Mercury";
+  };
+
+  const [currentPlanet, setCurrentPlanet] = useState(getPlanetFromURL());
   const curPlanet = usePlanetData(currentPlanet);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPlanet(getPlanetFromURL());
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const constantsData = useMemo(() => {
     return {
-      name: choice,
-      theme: themes[choice],
-      lighting: lighting,
       currentPlanet: curPlanet,
       setCurrentPlanet: setCurrentPlanet,
     };
-  }, [choice, curPlanet]);
-
-  registerFeatures({
-    theme: choice,
-  });
+  }, [curPlanet]);
 
   return (
     <FeaturesContext.Provider value={constantsData}>

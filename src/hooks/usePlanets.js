@@ -21,7 +21,9 @@ export const usePlanetData = (planetName) => {
         );
         setPlanetData({
           ...data[0],
-          rotationDuration: planetInfo["rotationDuration"],
+          index: planetInfo.index,
+          description: planetInfo.description,
+          rotationDuration: planetInfo.rotationDuration,
         });
       } catch (error) {
         console.error("could not fetch planet data: ", error);
