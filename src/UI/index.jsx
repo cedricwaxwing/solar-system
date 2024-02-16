@@ -26,13 +26,11 @@ const UI = () => {
     },
     onStart: () => {
       if (showInfo) {
-        console.log("starting", showInfo);
         setDisplay("flex");
       }
     },
     onResolve: () => {
       if (!showInfo) {
-        console.log("resting", showInfo);
         setDisplay("none");
       }
     },

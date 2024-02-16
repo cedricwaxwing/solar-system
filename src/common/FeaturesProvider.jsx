@@ -12,6 +12,8 @@ const FeaturesProvider = ({ children }) => {
   const [currentPlanet, setCurrentPlanet] = useState(getPlanetFromURL());
   const curPlanet = usePlanetData(currentPlanet);
 
+  console.log(curPlanet);
+
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPlanet(getPlanetFromURL());

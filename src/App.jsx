@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { KeyboardControls, Preload, View } from "@react-three/drei";
+import { KeyboardControls } from "@react-three/drei";
 import Experience from "./Experience";
 import "./App.css";
 import UI from "./UI";
@@ -25,19 +25,10 @@ const App = () => {
   return (
     <>
       <KeyboardControls map={map}>
-        <Experience />
         <Canvas
-          style={{
-            position: "fixed",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            overflow: "hidden",
-          }}
+          className='fixed inset-0'
           eventSource={document.getElementById("root")}>
-          <View.Port />
-          <Preload all />
+          <Experience />
         </Canvas>
         <UI />
       </KeyboardControls>

@@ -6,31 +6,43 @@ export const usePlanetData = (planetName) => {
   const [planetData, setPlanetData] = useState(null);
 
   useEffect(() => {
-    const fetchPlanetData = async () => {
-      try {
-        const response = await fetch(PLANETS_ENDPOINT, {
-          headers: { "X-Api-Key": "PjNUUs81Z76Ifgjn5jvCHjYverdrqFQmp3wsRo5i" },
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const planetInfo = planetsInfo.find((planet) => planet.name === planetName);
+    if (planetName === "Sun") {
+      setPlanetData({
+        name: planetInfo.name,
+        index: planetInfo.index,
+        description: planetInfo.description,
+        mass: 1.989e10,
+        radius: 696340,
+        temperature: 5778,
+        rotationDuration: planetInfo.rotationDuration,
+      });
+    } else {
+      const fetchPlanetData = async () => {
+        try {
+          const response = await fetch(PLANETS_ENDPOINT, {
+            headers: {
+              "X-Api-Key": "PjNUUs81Z76Ifgjn5jvCHjYverdrqFQmp3wsRo5i",
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+
+          setPlanetData({
+            ...data[0],
+            index: planetInfo.index,
+            description: planetInfo.description,
+            rotationDuration: planetInfo.rotationDuration,
+          });
+        } catch (error) {
+          console.error("could not fetch planet data: ", error);
         }
-        const data = await response.json();
+      };
 
-        const planetInfo = planetsInfo.find(
-          (planet) => planet.name === planetName
-        );
-        setPlanetData({
-          ...data[0],
-          index: planetInfo.index,
-          description: planetInfo.description,
-          rotationDuration: planetInfo.rotationDuration,
-        });
-      } catch (error) {
-        console.error("could not fetch planet data: ", error);
-      }
-    };
-
-    fetchPlanetData();
+      fetchPlanetData();
+    }
   }, [planetName]);
 
   return planetData;

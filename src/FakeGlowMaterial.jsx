@@ -28,7 +28,6 @@ const FakeGlowMaterial = ({
   depthTest = false,
   opacity = 1.0,
 }) => {
-  console.log(glowColor);
   const FakeGlowMaterial = useMemo(() => {
     return shaderMaterial(
       {
