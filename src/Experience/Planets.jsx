@@ -3,9 +3,22 @@ import { TextureLoader, MeshPhysicalMaterial, FrontSide } from "three";
 import { Icosahedron } from "@react-three/drei";
 import FakeGlowMaterial from "../FakeGlowMaterial";
 import { planetsInfo } from "../planets";
+import { useFeatures } from "../common/FeaturesProvider";
+import { useFrame } from "@react-three/fiber";
+import useIsMobile from "../hooks/useIsMobile";
+import { degreesToRadians } from "../common/helpers";
 
 const Planets = () => {
+  const { setPlanetPositions, currentPlanet } = useFeatures();
+  console.log(currentPlanet);
+  const isMobile = useIsMobile();
   const planetRefs = useRef({});
+  const speed = currentPlanet?.rotationDuration
+    ? 0.2 / currentPlanet.rotationDuration
+    : 0.5;
+  const rotationZ = currentPlanet?.semi_major_axis
+    ? degreesToRadians(currentPlanet.semi_major_axis)
+    : 0;
 
   useEffect(() => {
     const loader = new TextureLoader();
@@ -23,6 +36,23 @@ const Planets = () => {
     });
   }, []);
 
+  console.log(speed);
+
+  useEffect(() => {
+    const planetPositions = [];
+    Object.values(planetRefs.current).forEach((planet) => {
+      planetPositions.push(planet.position);
+    });
+    setPlanetPositions(planetPositions);
+  }, [planetRefs]);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    planetsInfo.forEach((planet) => {
+      planetRefs.current[planet.name].rotation.set(0, t * speed, rotationZ);
+    });
+  });
+
   return (
     <group>
       {planetsInfo.map((planet) => {
@@ -31,9 +61,9 @@ const Planets = () => {
             key={planet.name}
             ref={(el) => (planetRefs.current[planet.name] = el)}
             name={planet.name}
-            args={[planet.scale, 64, 64]}
-            position={[planet.distance, 0, 0]}
-            rotation={[0, -0.3, 0]}>
+            args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}
+            position={[planet.distance, isMobile ? 0.015 : 0, 0]}
+            rotation={[0, 0, 0]}>
             <meshPhysicalMaterial
               attach='material'
               side={FrontSide}

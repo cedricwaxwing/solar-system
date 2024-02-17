@@ -10,11 +10,20 @@ export const normalizePlanetData = (planetData) => {
       `${Number(mass).toLocaleString()} Kg`,
     ],
     Radius: `${formatNumberWithScale(radius)} Km`,
-    Rotation: planetData.name === "Sun" ? null : planetData.semi_major_axis,
+    Rotation:
+      planetData.name === "Sun" ? null : `${planetData.semi_major_axis}°`,
     "Distance From Earth":
       planetData.name === "Sun"
         ? null
         : lightYearsToKilometers(planetData.distance_light_year),
+    "Rotation Duration":
+      planetData.name === "Sun"
+        ? null
+        : `${Math.abs(
+            Number(planetData.rotationDuration.toFixed(2))
+          ).toLocaleString()} Day${
+            planetData.rotationDuration === 1 ? "" : "s"
+          }`,
     "Orbit Duration":
       planetData.name === "Sun"
         ? null

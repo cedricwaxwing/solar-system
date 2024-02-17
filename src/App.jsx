@@ -26,7 +26,7 @@ const App = () => {
     <>
       <KeyboardControls map={map}>
         <Canvas
-          className='fixed inset-0'
+          className='fixed left-0 top-0 w-screen h-screen'
           eventSource={document.getElementById("root")}>
           <Experience />
         </Canvas>
