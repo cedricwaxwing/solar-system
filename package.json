@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.0.15",
+    "@react-spring/three": "^9.7.3",
     "@react-three/csg": "^3.1.0",
     "@react-three/drei": "^9.93.0",
     "@react-three/fiber": "^8.15.14",
@@ -31,6 +32,7 @@
     "r3f-perf": "^7.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-spring": "^9.7.3",
     "simplex-noise": "^4.0.1",
     "three": "^0.160.0",
     "three-stdlib": "^2.21.8",

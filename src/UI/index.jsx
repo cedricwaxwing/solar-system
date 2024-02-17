@@ -1,19 +1,14 @@
-import { List } from "@phosphor-icons/react";
 import Logo from "./Logo";
-import Left from "./Left";
+import Sidebar from "./Sidebar";
 
 const UI = () => {
   return (
     <>
-      <header className='fixed top-0 left-0 w-screen flex justify-between items-center p-4'>
+      <header className='fixed top-0 left-0 w-screen flex items-center p-4 z-10'>
         <Logo className='text-white hover:text-white/60 duration-300 ease-in-out cursor-pointer' />
-        <List
-          size={24}
-          className='text-white hover:text-white/60 duration-300 ease-in-out cursor-pointer'
-        />
       </header>
       <main>
-        <Left />
+        <Sidebar />
       </main>
     </>
   );

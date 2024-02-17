@@ -10,13 +10,24 @@ export const normalizePlanetData = (planetData) => {
       `${Number(mass).toLocaleString()} Kg`,
     ],
     Radius: `${formatNumberWithScale(radius)} Km`,
-    Rotation: planetData.semi_major_axis,
-    "Distance From Earth": lightYearsToKilometers(
-      planetData.distance_light_year
-    ),
-    "Orbit Duration": `${Number(
-      planetData.period.toFixed(2)
-    ).toLocaleString()} Days`,
+    Rotation:
+      planetData.name === "Sun" ? null : `${planetData.semi_major_axis}°`,
+    "Distance From Earth":
+      planetData.name === "Sun"
+        ? null
+        : lightYearsToKilometers(planetData.distance_light_year),
+    "Rotation Duration":
+      planetData.name === "Sun"
+        ? null
+        : `${Math.abs(
+            Number(planetData.rotationDuration.toFixed(2))
+          ).toLocaleString()} Day${
+            planetData.rotationDuration === 1 ? "" : "s"
+          }`,
+    "Orbit Duration":
+      planetData.name === "Sun"
+        ? null
+        : `${Number(planetData.period.toFixed(2)).toLocaleString()} Days`,
     Temperature: planetData.temperature,
   };
 };
