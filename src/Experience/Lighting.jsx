@@ -9,6 +9,13 @@ export const Lighting = () => {
   const nebulaMap = useLoader(RGBELoader, "./assets/hdri/nebula.hdr");
   return (
     <>
+      <directionalLight
+        position={[-5, 0, 3]}
+        scale={100}
+        intensity={4}
+        color='#fff'
+      />
+      <ambientLight intensity={0.05} />
       <Stars factor={0.9} saturation={1} speed={1} />
       <Environment background blur={0.08}>
         <color attach='background' args={["#181818"]} />

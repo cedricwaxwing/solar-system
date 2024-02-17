@@ -5,15 +5,12 @@
   "description": "Generative Art Template",
   "keywords": [
     "generative art",
-    "react-three",
-    "fxhash"
+    "react-three"
   ],
   "scripts": {
     "dev": "vite --port 4182",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "clean": "npx rimraf ./build && npx rimraf ./fxhash-release.zip",
-    "zip": "cd build && npx bestzip ../fxhash-release.zip * && cd ..",
     "release": "npm run clean && npm run build && npm run zip",
     "preview": "vite preview"
   },

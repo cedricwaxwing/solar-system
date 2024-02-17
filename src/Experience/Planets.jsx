@@ -62,7 +62,7 @@ const Planets = () => {
             ref={(el) => (planetRefs.current[planet.name] = el)}
             name={planet.name}
             args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}
-            position={[planet.distance, isMobile ? 0.015 : 0, 0]}
+            position={[planet.distance, isMobile ? planet.scale * 0.25 : 0, 0]}
             rotation={[0, 0, 0]}>
             <meshPhysicalMaterial
               attach='material'

@@ -1,8 +1,8 @@
 export const Corner = ({ ...props }) => {
   return (
     <svg
-      width='32'
-      height='32'
+      width='48'
+      height='48'
       viewBox='0 0 31 31'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
