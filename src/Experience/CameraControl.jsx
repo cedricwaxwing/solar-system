@@ -29,7 +29,7 @@ const CameraControl = () => {
 
       const planetPosition = planetPositions[selectedPlanetInfo.index];
       newPosition = [
-        (planetPosition.x || selectedPlanetInfo.distance) + adjustment,
+        (planetPosition?.x || selectedPlanetInfo.distance) + adjustment,
         0,
         (selectedPlanetInfo.scale + 0.018) * 2.8,
       ];

@@ -16,7 +16,18 @@ const UI = () => {
       </header>
       <main>
         <Sidebar />
-        <Corner className='hidden md:flex transform rotate-90 transform-bottom-right fixed bottom-4 right-4 w-8 h-8 -translate-y-2' />
+        <div className='hidden bottom-6 right-6 md:flex fixed items-center space-x-1'>
+          <div className='text-[8px] text-emerald-500 font-display font-bold uppercase tracking-wider leading-none transform translate-y-0.5'>
+            A project by
+          </div>
+          <a
+            href='https://cedricwaxwing.xyz'
+            target='_blank'
+            className='text-[10px] text-emerald-300 font-display font-bold uppercase leading-none hover:underline hover:text-emerald-500 cursor-pointer tracking-wide transition-colors duration-300 ease-in-out'
+            rel='noreferrer'>
+            Cedric Waxwing
+          </a>
+        </div>
       </main>
     </>
   );

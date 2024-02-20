@@ -1,6 +1,11 @@
 import { useRef, useEffect } from "react";
-import { TextureLoader, MeshPhysicalMaterial, FrontSide } from "three";
-import { Icosahedron } from "@react-three/drei";
+import {
+  TextureLoader,
+  MeshPhysicalMaterial,
+  FrontSide,
+  DoubleSide,
+} from "three";
+import { Icosahedron, Ring, useTexture } from "@react-three/drei";
 import FakeGlowMaterial from "../FakeGlowMaterial";
 import { planetsInfo } from "../planets";
 import { useFeatures } from "../common/FeaturesProvider";
@@ -10,9 +15,9 @@ import { degreesToRadians } from "../common/helpers";
 
 const Planets = () => {
   const { setPlanetPositions, currentPlanet } = useFeatures();
-  console.log(currentPlanet);
   const isMobile = useIsMobile();
   const planetRefs = useRef({});
+  const saturnRings = useTexture("/assets/textures/saturn_ring.png");
   const speed = currentPlanet?.rotationDuration
     ? 0.2 / currentPlanet.rotationDuration
     : 0.5;
@@ -26,8 +31,8 @@ const Planets = () => {
       const texturePath = `/assets/textures/${planet.name.toLowerCase()}.jpg`;
       loader.load(texturePath, (texture) => {
         const planetMesh = planetRefs.current[planet.name];
-        if (planetMesh) {
-          planetMesh.material = new MeshPhysicalMaterial({
+        if (planetMesh && planetMesh.children[0]) {
+          planetMesh.children[0].material = new MeshPhysicalMaterial({
             map: texture,
             toneMapped: false,
           });
@@ -36,14 +41,13 @@ const Planets = () => {
     });
   }, []);
 
-  console.log(speed);
-
   useEffect(() => {
     const planetPositions = [];
     Object.values(planetRefs.current).forEach((planet) => {
       planetPositions.push(planet.position);
     });
     setPlanetPositions(planetPositions);
+    console.log(planetRefs.current);
   }, [planetRefs]);
 
   useFrame(({ clock }) => {
@@ -54,38 +58,53 @@ const Planets = () => {
   });
 
   return (
-    <group>
+    <>
       {planetsInfo.map((planet) => {
         return (
-          <Icosahedron
+          <group
+            name={planet.name}
             key={planet.name}
             ref={(el) => (planetRefs.current[planet.name] = el)}
-            name={planet.name}
-            args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}
             position={[planet.distance, isMobile ? planet.scale * 0.25 : 0, 0]}
             rotation={[0, 0, 0]}>
-            <meshPhysicalMaterial
-              attach='material'
-              side={FrontSide}
-              toneMapped={false}
-            />
-            {planet.name === "Sun" && (
-              <Icosahedron
-                args={[planet.scale * 2.5, 64, 64]}
-                position={[0, 0, 0]}>
-                <FakeGlowMaterial
-                  attach='material'
-                  glowColor='#ff8c00'
-                  glowInternalRadius={2}
-                  falloff={1.9}
-                  opacity={0.6}
-                />
-              </Icosahedron>
-            )}
-          </Icosahedron>
+            <Icosahedron args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}>
+              <meshPhysicalMaterial
+                attach='material'
+                side={FrontSide}
+                toneMapped={false}
+              />
+              {planet.name === "Sun" && (
+                <Icosahedron
+                  args={[planet.scale * 2.5, 64, 64]}
+                  position={[0, 0, 0]}>
+                  <FakeGlowMaterial
+                    attach='material'
+                    glowColor='#ff8c00'
+                    glowInternalRadius={2}
+                    falloff={1.9}
+                    opacity={0.6}
+                  />
+                </Icosahedron>
+              )}
+              {planet.name === "Saturn" && (
+                <>
+                  <Ring
+                    args={[planet.scale * 1.5, planet.scale * 2.5, 64, 8]}
+                    rotation-x={-Math.PI / 2}
+                    position={[0, 0, 0]}>
+                    <meshBasicMaterial
+                      alphaMap={saturnRings}
+                      map={saturnRings}
+                      side={DoubleSide}
+                    />
+                  </Ring>
+                </>
+              )}
+            </Icosahedron>
+          </group>
         );
       })}
-    </group>
+    </>
   );
 };
 
