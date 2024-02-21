@@ -1,9 +1,9 @@
 import { Canvas } from "@react-three/fiber";
-import { KeyboardControls } from "@react-three/drei";
+import { KeyboardControls, Loader } from "@react-three/drei";
 import Experience from "./Experience";
 import "./App.css";
 import UI from "./UI";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 
 const controls = {
   up: "up",
@@ -25,11 +25,12 @@ const App = () => {
   return (
     <>
       <KeyboardControls map={map}>
-        <Canvas
-          className='fixed left-0 top-0 w-screen h-screen'
-          eventSource={document.getElementById("root")}>
-          <Experience />
+        <Canvas className='fixed left-0 top-0 w-screen h-screen'>
+          <Suspense fallback={null}>
+            <Experience />
+          </Suspense>
         </Canvas>
+        <Loader />
         <UI />
       </KeyboardControls>
     </>

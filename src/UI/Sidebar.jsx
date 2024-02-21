@@ -55,7 +55,7 @@ const Sidebar = () => {
           <div
             className={clsx(
               "fixed bottom-0 w-full left-0 space-y-3 right-0 p-4 z-1",
-              showSidebar && "top-4 justify-end flex flex-col"
+              !showSidebar && "top-4 justify-end flex flex-col"
             )}>
             <div className='bg-gray-800/30 shadow-2xl shadow-gray-900/80 md:shadow-gray-900/20 w-full rounded-2xl border-2 border-white/10 backdrop-blur-2xl max-h-[calc(100vh-140px)] flex flex-col flex-grow relative'>
               <div
@@ -63,7 +63,7 @@ const Sidebar = () => {
                 onClick={toggleSidebar}>
                 <div className='space-y-0'>
                   <div className='text-xs font-medium leading-none font-sans tracking-widest uppercase text-teal-400'>
-                    Planet
+                    {currentPlanet.name === "Sun" ? "Star" : "Planet"}
                   </div>
                   <div className='font-display uppercase leading-none tracking-widest uppercase text-2xl text-white'>
                     {currentPlanet.name}
@@ -101,49 +101,52 @@ const Sidebar = () => {
           </div>
         </>
       ) : (
-        <div className='flex flex-col justify-center md:justify-between absolute bottom-4 left-4 md:w-full md:max-w-[400px] max-md:left-4'>
-          <div className='space-y-4'>
-            <div className='bg-gray-800/30 shadow-2xl shadow-gray-900/80 md:shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl max-h-[calc(100vh-250px)] md:flex md:flex-col md:flex-grow relative'>
-              <div className='flex items-center justify-between p-4'>
-                <div className='space-y-0'>
-                  <div className='text-xs font-medium leading-none font-sans tracking-widest uppercase text-teal-400'>
-                    Planet
-                  </div>
-                  <div className='font-display uppercase leading-none tracking-widest uppercase text-2xl text-white'>
-                    {currentPlanet.name}
-                  </div>
+        <div className='flex space-y-4 flex-col justify-between md:justify-between absolute bottom-4 left-4 md:w-full md:max-w-[400px] top-16'>
+          <div
+            className={clsx(
+              "bg-gray-800/30 shadow-2xl shadow-gray-900/80 md:shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl max-h-[calc(100vh-250px)] relative transition-colors duration-300 ease-in-out",
+              !showSidebar && "hover:bg-gray-700/30"
+            )}>
+            <div
+              className='flex items-center justify-between p-4 cursor-pointer group'
+              onClick={toggleSidebar}>
+              <div className='space-y-0'>
+                <div className='text-xs font-medium leading-none font-sans tracking-widest uppercase text-teal-400'>
+                  Planet
                 </div>
-                <CaretDown
-                  size={16}
-                  weight='bold'
-                  className={clsx(
-                    "text-white cursor-pointer hover:opacity-60 transition-opacity transition-transform transform duration-300 ease-in-out",
-                    !showSidebar && "rotate-180"
-                  )}
-                  onClick={toggleSidebar}
-                />
+                <div className='font-display uppercase leading-none tracking-widest uppercase text-2xl text-white'>
+                  {currentPlanet.name}
+                </div>
               </div>
-              {containerTransition((style, item) => (
-                <>
-                  {item && (
-                    <animated.div
-                      className='container overflow-y-hidden'
-                      style={!isMobile ? style : {}}>
-                      <PlanetStats
-                        currentPlanet={currentPlanet}
-                        planets={planets}
-                        planetData={planetData}
-                      />
-                    </animated.div>
-                  )}
-                </>
-              ))}
+              <CaretDown
+                size={16}
+                weight='bold'
+                className={clsx(
+                  "text-white group-hover:opacity-60 transition-opacity transition-transform transform duration-300 ease-in-out",
+                  showSidebar && "rotate-180"
+                )}
+              />
             </div>
-            <PlanetNavigation
-              prevPlanet={prevPlanet.name}
-              nextPlanet={nextPlanet.name}
-            />
+            {containerTransition((style, item) => (
+              <>
+                {item && (
+                  <animated.div
+                    className='container overflow-y-hidden'
+                    style={!isMobile ? style : {}}>
+                    <PlanetStats
+                      currentPlanet={currentPlanet}
+                      planets={planets}
+                      planetData={planetData}
+                    />
+                  </animated.div>
+                )}
+              </>
+            ))}
           </div>
+          <PlanetNavigation
+            prevPlanet={prevPlanet.name}
+            nextPlanet={nextPlanet.name}
+          />
         </div>
       )}
     </>
@@ -162,7 +165,7 @@ const PlanetStats = ({ currentPlanet, planets, planetData }) => {
         </p>
         <div className='bg-white/10 w-full h-0.5' />
       </div>
-      <div className='overflow-y-auto space-y-4 p-4 pb-0 flex flex-col flex-grow'>
+      <div className='overflow-y-scroll space-y-4 p-4 pb-0 flex flex-col flex-grow md:max-h-[calc(100vh-490px)]'>
         {planets.map(([key, value], i) => {
           return (
             <PlanetInfo
@@ -190,10 +193,10 @@ const PlanetStats = ({ currentPlanet, planets, planetData }) => {
                   key={i}
                   onClick={() => setTempScale(scale)}
                   className={clsx(
-                    " min-w-8 h-8 font-bold text-sm rounded-md flex items-center justify-center cursor-pointer",
+                    " min-w-8 h-8 font-bold text-sm rounded-md flex items-center justify-center transition-colors duration-300 ease-in-out",
                     tempScale === scale
-                      ? "bg-teal-400/50 text-white"
-                      : "bg-white/20 text-white/50 hover:bg-white/30 hover:text-white/80"
+                      ? "bg-teal-400/50 text-white cursor-default"
+                      : "bg-white/10 text-white/20 hover:bg-white/30 hover:text-white/80 cursor-pointer"
                   )}>
                   {`°${scale}`}
                 </div>

@@ -15,7 +15,7 @@ export const usePlanetData = (planetName) => {
         mass: 1.989e10,
         radius: 696340,
         temperature: 5778,
-        rotationDuration: planetInfo.rotationDuration,
+        rotationDuration: 27,
       });
     } else {
       const fetchPlanetData = async () => {

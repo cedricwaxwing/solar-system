@@ -1,29 +1,20 @@
-import { useRef, useEffect } from "react";
-import {
-  TextureLoader,
-  MeshPhysicalMaterial,
-  FrontSide,
-  DoubleSide,
-} from "three";
-import { Icosahedron, Ring, useTexture } from "@react-three/drei";
+import { useRef, useEffect, useState } from "react";
+import { TextureLoader, MeshPhysicalMaterial, FrontSide } from "three";
+import { Icosahedron, Torus } from "@react-three/drei";
 import FakeGlowMaterial from "../FakeGlowMaterial";
 import { planetsInfo } from "../planets";
 import { useFeatures } from "../common/FeaturesProvider";
 import { useFrame } from "@react-three/fiber";
 import useIsMobile from "../hooks/useIsMobile";
 import { degreesToRadians } from "../common/helpers";
+import { mapValue } from "../common/utils";
+import { LayerMaterial, Noise } from "lamina";
 
 const Planets = () => {
   const { setPlanetPositions, currentPlanet } = useFeatures();
+  const [tempPlanet, setTempPlanet] = useState(currentPlanet?.name || null);
   const isMobile = useIsMobile();
   const planetRefs = useRef({});
-  const saturnRings = useTexture("/assets/textures/saturn_ring.png");
-  const speed = currentPlanet?.rotationDuration
-    ? 0.2 / currentPlanet.rotationDuration
-    : 0.5;
-  const rotationZ = currentPlanet?.semi_major_axis
-    ? degreesToRadians(currentPlanet.semi_major_axis)
-    : 0;
 
   useEffect(() => {
     const loader = new TextureLoader();
@@ -31,80 +22,143 @@ const Planets = () => {
       const texturePath = `/assets/textures/${planet.name.toLowerCase()}.jpg`;
       loader.load(texturePath, (texture) => {
         const planetMesh = planetRefs.current[planet.name];
-        if (planetMesh && planetMesh.children[0]) {
-          planetMesh.children[0].material = new MeshPhysicalMaterial({
+        const currentPlanetMesh = planetMesh?.children[0];
+        if (planetMesh && currentPlanetMesh) {
+          currentPlanetMesh.material = new MeshPhysicalMaterial({
             map: texture,
             toneMapped: false,
           });
+          let speed = Math.abs(
+            currentPlanet?.rotationDuration
+              ? 0.2 / currentPlanet.rotationDuration
+              : 0.5
+          );
+          speed = mapValue(speed, 0.5, 0.0008, 1, 0.1);
+          const rotationZ = currentPlanet?.semi_major_axis
+            ? degreesToRadians(currentPlanet.semi_major_axis)
+            : 0;
+          planet.speed = speed;
+          planet.rotationZ = rotationZ;
         }
       });
     });
   }, []);
 
   useEffect(() => {
+    setTimeout(() => {
+      setTempPlanet(currentPlanet?.name);
+    }, 4000);
+  }, [currentPlanet?.name]);
+
+  useEffect(() => {
     const planetPositions = [];
     Object.values(planetRefs.current).forEach((planet) => {
-      planetPositions.push(planet.position);
+      planetPositions.push(planet.children[0].position);
     });
     setPlanetPositions(planetPositions);
-    console.log(planetRefs.current);
   }, [planetRefs]);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-    planetsInfo.forEach((planet) => {
-      planetRefs.current[planet.name].rotation.set(0, t * speed, rotationZ);
-    });
+    const curPlanet = planetsInfo.find(
+      (planet) => planet.index === currentPlanet?.index
+    ); // only animate current planet to be more performant
+    if (curPlanet) {
+      const currentPlanetMesh = planetRefs.current[curPlanet.name].children[0];
+      currentPlanetMesh?.rotation.set(
+        curPlanet?.rotationZ,
+        t * curPlanet?.speed,
+        0
+      );
+    }
   });
 
   return (
-    <>
-      {planetsInfo.map((planet) => {
-        return (
-          <group
-            name={planet.name}
-            key={planet.name}
-            ref={(el) => (planetRefs.current[planet.name] = el)}
-            position={[planet.distance, isMobile ? planet.scale * 0.25 : 0, 0]}
-            rotation={[0, 0, 0]}>
-            <Icosahedron args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}>
-              <meshPhysicalMaterial
-                attach='material'
-                side={FrontSide}
-                toneMapped={false}
-              />
-              {planet.name === "Sun" && (
-                <Icosahedron
-                  args={[planet.scale * 2.5, 64, 64]}
-                  position={[0, 0, 0]}>
-                  <FakeGlowMaterial
-                    attach='material'
-                    glowColor='#ff8c00'
-                    glowInternalRadius={2}
-                    falloff={1.9}
-                    opacity={0.6}
-                  />
-                </Icosahedron>
-              )}
-              {planet.name === "Saturn" && (
-                <>
-                  <Ring
-                    args={[planet.scale * 1.5, planet.scale * 2.5, 64, 8]}
-                    rotation-x={-Math.PI / 2}
+    planetsInfo &&
+    currentPlanet && (
+      <>
+        {planetsInfo.map((planet) => {
+          const renderRings =
+            planet.ringColors && planet?.name === currentPlanet?.name;
+          return (
+            <group
+              name={planet.name}
+              key={planet.name}
+              ref={(el) => (planetRefs.current[planet.name] = el)}
+              position={[
+                planet.distance,
+                isMobile ? planet.scale * 0.25 : 0,
+                0,
+              ]}
+              rotation={[0, 0, 0]}>
+              <Icosahedron
+                key={`planet-${planet.name}`}
+                args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}>
+                <meshPhysicalMaterial
+                  attach='material'
+                  side={FrontSide}
+                  toneMapped={false}
+                />
+                {planet.name === "Sun" && (
+                  <Icosahedron
+                    args={[planet.scale * 2.5, 64, 64]}
                     position={[0, 0, 0]}>
-                    <meshBasicMaterial
-                      alphaMap={saturnRings}
-                      map={saturnRings}
-                      side={DoubleSide}
+                    <FakeGlowMaterial
+                      attach='material'
+                      glowColor='#ff8c00'
+                      glowInternalRadius={2}
+                      falloff={1.9}
+                      opacity={0.6}
                     />
-                  </Ring>
-                </>
-              )}
-            </Icosahedron>
-          </group>
-        );
-      })}
-    </>
+                  </Icosahedron>
+                )}
+                {(tempPlanet === "Saturn" || currentPlanet.name === "Saturn") &&
+                  planet.ringColors &&
+                  planet.ringColors.map((color, index) => {
+                    const radius = mapValue(
+                      index,
+                      0,
+                      30,
+                      planet.scale * 1.8,
+                      planet.scale * 2.65
+                    );
+                    return (
+                      <Torus
+                        name={`${planet.name}-ring`}
+                        key={index}
+                        scale-z={0.15}
+                        position={[0, 0, 0]}
+                        args={[radius, Math.random() * 0.05 + 0.02, 6, 72]}
+                        rotation-x={-Math.PI / 2}>
+                        {renderRings ? (
+                          <LayerMaterial
+                            lighting='standard'
+                            color={color}
+                            emissive={color}
+                            emissiveIntensity={0.7}
+                            envMapIntensity={3.5}>
+                            <Noise
+                              colorA='#fff'
+                              colorB='#000'
+                              colorC='#fff'
+                              colorD='#000'
+                              mode='overlay'
+                              alpha={1}
+                              scale={Math.random() * 10 + 25}
+                            />
+                          </LayerMaterial>
+                        ) : (
+                          <meshBasicMaterial color={color} />
+                        )}
+                      </Torus>
+                    );
+                  })}
+              </Icosahedron>
+            </group>
+          );
+        })}
+      </>
+    )
   );
 };
 
