@@ -13,6 +13,7 @@ const Planets = () => {
   const { setPlanetPositions, currentPlanet } = useFeatures();
   const [tempPlanet, setTempPlanet] = useState(currentPlanet?.name || null);
   const [currentSpeed, setCurrentSpeed] = useState(0.1);
+  const [currentRotation, setCurrentRotation] = useState(0);
   const isMobile = useIsMobile();
   const planetRefs = useRef({});
 
@@ -28,17 +29,6 @@ const Planets = () => {
             map: texture,
             toneMapped: false,
           });
-          let speed = Math.abs(
-            currentPlanet?.rotationDuration
-              ? 0.2 / currentPlanet.rotationDuration
-              : 0.5
-          );
-          speed = mapValue(speed, 0.5, 0.0008, 1, 0.08);
-          const rotationZ = currentPlanet?.semi_major_axis
-            ? degreesToRadians(currentPlanet.semi_major_axis)
-            : 0;
-          planet.speed = speed;
-          planet.rotationZ = rotationZ;
         }
       });
     });
@@ -47,6 +37,7 @@ const Planets = () => {
   useEffect(() => {
     if (currentPlanet) {
       setCurrentSpeed(calculateSpeed(currentPlanet.rotationDuration));
+      setCurrentRotation(degreesToRadians(currentPlanet.semi_major_axis));
     }
   }, [currentPlanet]);
 
@@ -71,11 +62,7 @@ const Planets = () => {
     ); // only animate current planet to be more performant
     if (curPlanet) {
       const currentPlanetMesh = planetRefs.current[curPlanet.name].children[0];
-      currentPlanetMesh?.rotation.set(
-        curPlanet?.rotationZ,
-        t * currentSpeed,
-        0
-      );
+      currentPlanetMesh?.rotation.set(currentRotation, t * currentSpeed, 0);
     }
   });
 
