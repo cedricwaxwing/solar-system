@@ -5,7 +5,6 @@ import { useFeatures } from "../common/FeaturesProvider";
 import { planetsInfo } from "../planets";
 import { OrbitControls } from "@react-three/drei";
 import useIsMobile from "../hooks/useIsMobile";
-import { mapValue } from "../common/utils";
 
 const AnimatedOrbit = animated(OrbitControls);
 

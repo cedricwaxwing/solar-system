@@ -33,7 +33,7 @@ const Planets = () => {
               ? 0.2 / currentPlanet.rotationDuration
               : 0.5
           );
-          speed = mapValue(speed, 0.5, 0.0008, 1, 0.1);
+          speed = mapValue(speed, 0.5, 0.0008, 1, 0.08);
           const rotationZ = currentPlanet?.semi_major_axis
             ? degreesToRadians(currentPlanet.semi_major_axis)
             : 0;

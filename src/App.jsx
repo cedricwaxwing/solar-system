@@ -25,13 +25,13 @@ const App = () => {
   return (
     <>
       <KeyboardControls map={map}>
-        <Canvas className='fixed left-0 top-0 w-screen h-screen'>
-          <Suspense fallback={null}>
+        <Suspense fallback={null}>
+          <Canvas className='fixed left-0 top-0 w-screen h-screen'>
             <Experience />
-          </Suspense>
-        </Canvas>
+          </Canvas>
+          <UI />
+        </Suspense>
         <Loader />
-        <UI />
       </KeyboardControls>
     </>
   );
