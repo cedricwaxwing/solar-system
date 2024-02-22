@@ -46,7 +46,6 @@ const Planets = () => {
 
   useEffect(() => {
     if (currentPlanet) {
-      console.log(currentPlanet.name);
       setCurrentSpeed(calculateSpeed(currentPlanet.rotationDuration));
     }
   }, [currentPlanet]);
