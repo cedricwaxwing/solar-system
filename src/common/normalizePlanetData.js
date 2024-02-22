@@ -10,7 +10,7 @@ export const normalizePlanetData = (planetData) => {
       `${Number(mass).toLocaleString()} Kg`,
     ],
     Radius: `${formatNumberWithScale(radius)} Km`,
-    Rotation:
+    "Axis Rotation":
       planetData.name === "Sun" ? null : `${planetData.semi_major_axis}°`,
     "Distance From Earth":
       planetData.name === "Sun"
