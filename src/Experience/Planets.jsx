@@ -6,13 +6,13 @@ import { planetsInfo } from "../planets";
 import { useFeatures } from "../common/FeaturesProvider";
 import { useFrame } from "@react-three/fiber";
 import useIsMobile from "../hooks/useIsMobile";
-import { degreesToRadians } from "../common/helpers";
-import { mapValue } from "../common/utils";
+import { mapValue, calculateSpeed, degreesToRadians } from "../common/helpers";
 import { LayerMaterial, Noise } from "lamina";
 
 const Planets = () => {
   const { setPlanetPositions, currentPlanet } = useFeatures();
   const [tempPlanet, setTempPlanet] = useState(currentPlanet?.name || null);
+  const [currentSpeed, setCurrentSpeed] = useState(0.1);
   const isMobile = useIsMobile();
   const planetRefs = useRef({});
 
@@ -45,6 +45,13 @@ const Planets = () => {
   }, []);
 
   useEffect(() => {
+    if (currentPlanet) {
+      console.log(currentPlanet.name);
+      setCurrentSpeed(calculateSpeed(currentPlanet.rotationDuration));
+    }
+  }, [currentPlanet]);
+
+  useEffect(() => {
     setTimeout(() => {
       setTempPlanet(currentPlanet?.name);
     }, 4000);
@@ -67,7 +74,7 @@ const Planets = () => {
       const currentPlanetMesh = planetRefs.current[curPlanet.name].children[0];
       currentPlanetMesh?.rotation.set(
         curPlanet?.rotationZ,
-        t * curPlanet?.speed,
+        t * currentSpeed,
         0
       );
     }
