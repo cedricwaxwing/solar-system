@@ -104,7 +104,7 @@ const Sidebar = () => {
         <div className='flex space-y-4 flex-col justify-between md:justify-between absolute bottom-4 left-4 md:w-full md:max-w-[400px] top-16'>
           <div
             className={clsx(
-              "bg-gray-800/30 shadow-2xl shadow-gray-900/80 md:shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl max-h-[calc(100vh-250px)] relative transition-colors duration-300 ease-in-out",
+              "bg-gray-800/30 shadow-2xl shadow-gray-900/80 md:shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl max-h-[calc(100vh-250px)] relative transition-colors duration-300 ease-in-out flex flex-grow flex-col",
               !showSidebar && "hover:bg-gray-700/30"
             )}>
             <div
@@ -131,8 +131,8 @@ const Sidebar = () => {
               <>
                 {item && (
                   <animated.div
-                    className='container overflow-y-hidden'
-                    style={!isMobile ? style : {}}>
+                    className='overflow-y-hidden flex flex-col flex-grow'
+                    style={style}>
                     <PlanetStats
                       currentPlanet={currentPlanet}
                       planets={planets}
@@ -165,7 +165,7 @@ const PlanetStats = ({ currentPlanet, planets, planetData }) => {
         </p>
         <div className='bg-white/10 w-full h-0.5' />
       </div>
-      <div className='overflow-y-scroll space-y-4 p-4 pb-0 flex flex-col flex-grow md:max-h-[calc(100vh-490px)]'>
+      <div className='overflow-y-auto space-y-4 p-4 pb-0 flex flex-col flex-grow'>
         {planets.map(([key, value], i) => {
           return (
             <PlanetInfo
