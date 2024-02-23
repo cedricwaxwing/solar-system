@@ -26,7 +26,7 @@ const App = () => {
     <>
       <KeyboardControls map={map}>
         <Suspense fallback={null}>
-          <Canvas className='fixed left-0 top-0 w-screen h-screen'>
+          <Canvas className='fixed left-0 top-0 !w-screen !h-screen !min-h-screen'>
             <Experience />
           </Canvas>
           <UI />
