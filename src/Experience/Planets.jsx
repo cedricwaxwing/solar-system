@@ -78,11 +78,7 @@ const Planets = () => {
               name={planet.name}
               key={planet.name}
               ref={(el) => (planetRefs.current[planet.name] = el)}
-              position={[
-                planet.distance,
-                isMobile ? planet.scale * 0.25 : 0,
-                0,
-              ]}
+              position={[planet.distance, isMobile ? planet.scale * 0.4 : 0, 0]}
               rotation={[0, 0, 0]}>
               <Icosahedron
                 key={`planet-${planet.name}`}

@@ -55,7 +55,7 @@ const Sidebar = () => {
           <div
             className={clsx(
               "fixed bottom-0 w-full left-0 space-y-3 right-0 p-4 z-1",
-              !showSidebar && "top-4 justify-end flex flex-col"
+              showSidebar && "top-4 justify-end flex flex-col"
             )}>
             <div className='bg-gray-800/30 shadow-2xl shadow-gray-900/80 md:shadow-gray-900/20 w-full rounded-2xl border-2 border-white/10 backdrop-blur-2xl max-h-[calc(100vh-140px)] flex flex-col flex-grow relative'>
               <div
