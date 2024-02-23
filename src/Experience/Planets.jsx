@@ -31,14 +31,14 @@ const Planets = () => {
         const currentPlanetMesh = planetMesh?.children[0];
         if (
           planetMesh &&
-          currentPlanetMesh?.material &&
+          currentPlanetMesh &&
+          currentPlanetMesh.material &&
           planet.name === "Sun"
         ) {
           currentPlanetMesh.material = new MeshBasicMaterial({
             map: texture,
           });
         } else {
-          console.log(currentPlanetMesh);
           currentPlanetMesh.material = new MeshPhysicalMaterial({
             map: texture,
           });
