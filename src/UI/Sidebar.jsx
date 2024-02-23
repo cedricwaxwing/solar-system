@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useFeatures } from "../common/FeaturesProvider";
 import { normalizePlanetData } from "../common/normalizePlanetData";
 import { planetsInfo } from "../planets";
-import { CaretDown } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, CaretDown } from "@phosphor-icons/react";
 import { animated, useTransition } from "react-spring";
 import useIsMobile from "../hooks/useIsMobile";
 import { useKeyboardControls } from "@react-three/drei";
@@ -255,37 +255,49 @@ const PlanetNavigation = ({ prevPlanet, nextPlanet }) => {
     <div className='flex md:flex-col md:space-y-2 max-md:space-x-2'>
       <button
         onClick={() => handlePlanetChange(prevPlanet)}
-        className='max-md:w-1/2 flex bg-gray-800/30 shadow-2xl shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl space-x-1.5 md:space-x-4 flex items-center px-4 py-3 hover:bg-gray-600/30 cursor-pointer duration-300 transition-colors'>
-        <img
-          src={`/assets/images/${prevPlanet?.toLowerCase()}.png`}
-          alt={prevPlanet?.toLowerCase()}
-          className='w-6 h-6 md:w-10 md:h-10 drop-shadow-lg'
-        />
-        <div className='space-y-0'>
-          <div className='text-[10px] sm:text-xs font-medium leading-none font-sans text-left tracking-widest uppercase text-teal-400'>
-            Previous
-          </div>
-          <div className='font-display uppercase leading-none tracking-widest uppercase max-sm:text-[3vmin] sm:text-md text-white'>
-            {prevPlanet}
+        className='max-md:w-1/2 max-md:flex-row-reverse flex bg-gray-800/30 shadow-2xl shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl md:space-x-1.5 justify-end md:justify-between md:space-x-4 flex items-center px-2 md:px-4 py-3 hover:bg-gray-600/30 cursor-pointer duration-300 transition-colors'>
+        <div className='space-x-1 flex items-center'>
+          <img
+            src={`/assets/images/${prevPlanet?.toLowerCase()}.png`}
+            alt={prevPlanet?.toLowerCase()}
+            className='w-6 h-6 md:w-10 md:h-10 drop-shadow-lg'
+          />
+          <div className='space-y-0'>
+            <div className='text-[10px] sm:text-xs font-medium leading-none font-sans text-left tracking-widest uppercase text-teal-400'>
+              Previous
+            </div>
+            <div className='font-display uppercase leading-none tracking-widest uppercase max-sm:text-[2.5vmin] sm:text-md text-white'>
+              {prevPlanet}
+            </div>
           </div>
         </div>
+        <ArrowLeft
+          weight='bold'
+          className='text-teal-400 w-4 h-4 md:w-8 md:h-8 max-md:mr-2'
+        />
       </button>
       <button
         onClick={() => handlePlanetChange(nextPlanet)}
-        className='max-md:w-1/2 flex bg-gray-800/30 shadow-2xl shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl flex items-center space-x-1.5 md:space-x-4 px-4 py-3 hover:bg-gray-600/30 cursor-pointer duration-300 transition-colors'>
-        <img
-          src={`/assets/images/${nextPlanet?.toLowerCase()}.png`}
-          alt={nextPlanet?.toLowerCase()}
-          className='w-6 h-6 md:w-10 md:h-10 drop-shadow-lg'
-        />
-        <div className='space-y-0'>
-          <div className='text-[10px] sm:text-xs font-medium leading-none font-sans text-left tracking-widest uppercase text-teal-400'>
-            Next
-          </div>
-          <div className='font-display uppercase leading-none tracking-widest uppercase max-sm:text-[3vmin] sm:text-md text-white'>
-            {nextPlanet}
+        className='max-md:w-1/2 flex bg-gray-800/30 shadow-2xl shadow-gray-900/20 rounded-2xl border-2 border-white/10 backdrop-blur-2xl flex items-center space-x-1.5 justify-between md:space-x-4 px-2 md:px-4 py-3 hover:bg-gray-600/30 cursor-pointer duration-300 transition-colors'>
+        <div className='space-x-1 flex items-center'>
+          <img
+            src={`/assets/images/${nextPlanet?.toLowerCase()}.png`}
+            alt={nextPlanet?.toLowerCase()}
+            className='w-6 h-6 md:w-10 md:h-10 drop-shadow-lg'
+          />
+          <div className='space-y-0'>
+            <div className='text-[10px] sm:text-xs font-medium leading-none font-sans text-left tracking-widest uppercase text-teal-400'>
+              Next
+            </div>
+            <div className='font-display uppercase leading-none tracking-widest uppercase max-sm:text-[2.5vmin] sm:text-md text-white'>
+              {nextPlanet}
+            </div>
           </div>
         </div>
+        <ArrowRight
+          weight='bold'
+          className='text-teal-400 w-4 h-4 md:w-8 md:h-8'
+        />
       </button>
     </div>
   );

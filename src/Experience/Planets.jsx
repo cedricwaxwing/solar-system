@@ -1,5 +1,10 @@
 import { useRef, useEffect, useState } from "react";
-import { TextureLoader, MeshPhysicalMaterial, FrontSide } from "three";
+import {
+  TextureLoader,
+  MeshPhysicalMaterial,
+  DoubleSide,
+  MeshBasicMaterial,
+} from "three";
 import { Icosahedron, Torus } from "@react-three/drei";
 import FakeGlowMaterial from "../FakeGlowMaterial";
 import { planetsInfo } from "../planets";
@@ -24,20 +29,32 @@ const Planets = () => {
       loader.load(texturePath, (texture) => {
         const planetMesh = planetRefs.current[planet.name];
         const currentPlanetMesh = planetMesh?.children[0];
-        if (planetMesh && currentPlanetMesh) {
+        if (
+          planetMesh &&
+          currentPlanetMesh?.material &&
+          planet.name === "Sun"
+        ) {
+          currentPlanetMesh.material = new MeshBasicMaterial({
+            map: texture,
+          });
+        } else {
+          console.log(currentPlanetMesh);
           currentPlanetMesh.material = new MeshPhysicalMaterial({
             map: texture,
-            toneMapped: false,
           });
         }
       });
     });
-  }, []);
+  }, [planetRefs.current]);
 
   useEffect(() => {
     if (currentPlanet) {
       setCurrentSpeed(calculateSpeed(currentPlanet.rotationDuration));
-      setCurrentRotation(degreesToRadians(currentPlanet.semi_major_axis));
+      setCurrentRotation(
+        degreesToRadians(
+          currentPlanet.semi_major_axis ? currentPlanet.semi_major_axis : 0
+        )
+      );
     }
   }, [currentPlanet]);
 
@@ -83,23 +100,33 @@ const Planets = () => {
               <Icosahedron
                 key={`planet-${planet.name}`}
                 args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}>
-                <meshPhysicalMaterial
-                  attach='material'
-                  side={FrontSide}
-                  toneMapped={false}
-                />
+                {planet.name === "Sun" ? (
+                  <meshBasicMaterial
+                    attach='material'
+                    side={DoubleSide}
+                    // toneMapped={false}
+                  />
+                ) : (
+                  <meshPhysicalMaterial
+                    attach='material'
+                    side={DoubleSide}
+                    toneMapped={false}
+                  />
+                )}
                 {planet.name === "Sun" && (
-                  <Icosahedron
-                    args={[planet.scale * 2.5, 64, 64]}
-                    position={[0, 0, 0]}>
-                    <FakeGlowMaterial
-                      attach='material'
-                      glowColor='#ff8c00'
-                      glowInternalRadius={2}
-                      falloff={1.9}
-                      opacity={0.6}
-                    />
-                  </Icosahedron>
+                  <>
+                    <Icosahedron
+                      args={[planet.scale * 2.5, 64, 64]}
+                      position={[0, 0, 0]}>
+                      <FakeGlowMaterial
+                        attach='material'
+                        glowColor='#ff8c00'
+                        glowInternalRadius={2}
+                        falloff={1.9}
+                        opacity={0.3}
+                      />
+                    </Icosahedron>
+                  </>
                 )}
                 {(tempPlanet === "Saturn" || currentPlanet.name === "Saturn") &&
                   planet.ringColors &&
