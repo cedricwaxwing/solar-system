@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, memo } from "react";
 import {
   TextureLoader,
   MeshPhysicalMaterial,
@@ -92,8 +92,6 @@ const Planets = () => {
     currentPlanet && (
       <>
         {planetsInfo.map((planet) => {
-          const renderRings =
-            planet.ringColors && planet?.name === currentPlanet?.name;
           return (
             <group
               name={planet.name}
@@ -103,13 +101,9 @@ const Planets = () => {
               rotation={[0, 0, 0]}>
               <Icosahedron
                 key={`planet-${planet.name}`}
-                args={[planet.scale * (!isMobile ? 1.3 : 1), 64, 64]}>
+                args={[planet.scale * (!isMobile ? 1.3 : 1), 32, 32]}>
                 {planet.name === "Sun" ? (
-                  <meshBasicMaterial
-                    attach='material'
-                    side={DoubleSide}
-                    // toneMapped={false}
-                  />
+                  <meshBasicMaterial attach='material' side={DoubleSide} />
                 ) : (
                   <meshPhysicalMaterial
                     attach='material'
@@ -120,7 +114,7 @@ const Planets = () => {
                 {planet.name === "Sun" && (
                   <>
                     <Icosahedron
-                      args={[planet.scale * 2.5, 64, 64]}
+                      args={[planet.scale * 2.5, 32, 32]}
                       position={[0, 0, 0]}>
                       <FakeGlowMaterial
                         attach='material'
@@ -138,39 +132,41 @@ const Planets = () => {
                     const radius = mapValue(
                       index,
                       0,
-                      30,
-                      planet.scale * 1.8,
-                      planet.scale * 2.65
+                      planet.ringColors.length,
+                      planet.scale * 1.7,
+                      planet.scale * 2.3
                     );
+                    const positions = [...Array(6)].map(() => [
+                      Math.min(planet.scale * 2, radius) *
+                        Math.cos(Math.random() * 2 * Math.PI),
+                      Math.random() * 0.3 - 0.15,
+                      Math.max(planet.scale * 2.01, radius) *
+                        Math.sin(Math.random() * 2 * Math.PI),
+                    ]);
                     return (
-                      <Torus
-                        name={`${planet.name}-ring`}
-                        key={index}
-                        scale-z={0.15}
-                        position={[0, 0, 0]}
-                        args={[radius, Math.random() * 0.05 + 0.02, 6, 72]}
-                        rotation-x={-Math.PI / 2}>
-                        {renderRings ? (
-                          <LayerMaterial
-                            lighting='standard'
-                            color={color}
-                            emissive={color}
-                            emissiveIntensity={0.7}
-                            envMapIntensity={3.5}>
-                            <Noise
-                              colorA='#fff'
-                              colorB='#000'
-                              colorC='#fff'
-                              colorD='#000'
-                              mode='overlay'
-                              alpha={1}
-                              scale={Math.random() * 10 + 25}
-                            />
-                          </LayerMaterial>
-                        ) : (
-                          <meshBasicMaterial color={color} />
-                        )}
-                      </Torus>
+                      <>
+                        {positions.map((position, posI) => (
+                          <Icosahedron
+                            key={posI}
+                            position={position}
+                            args={[
+                              Math.random() * 0.05,
+                              Math.ceil(Math.random()) * 4 + 1,
+                              Math.ceil(Math.random()) * 4 + 1,
+                            ]}>
+                            <RingMaterial color={color} />
+                          </Icosahedron>
+                        ))}
+                        <Torus
+                          name={`${planet.name}-ring`}
+                          key={index}
+                          scale-z={0.15}
+                          position={[0, 0, 0]}
+                          args={[radius, Math.random() * 0.1 + 0.05, 5, 56]}
+                          rotation-x={-Math.PI / 2}>
+                          <RingMaterial color={color} />
+                        </Torus>
+                      </>
                     );
                   })}
               </Icosahedron>
@@ -183,3 +179,26 @@ const Planets = () => {
 };
 
 export default Planets;
+
+const RingMaterial = memo(({ color }) => {
+  return (
+    <LayerMaterial
+      lighting='standard'
+      color={color}
+      emissive={color}
+      emissiveIntensity={0.7}
+      envMapIntensity={3.5}>
+      <Noise
+        colorA='#fff'
+        colorB='#000'
+        colorC='#fff'
+        colorD='#000'
+        mode='overlay'
+        alpha={1}
+        scale={Math.random() * 10 + 25}
+      />
+    </LayerMaterial>
+  );
+});
+
+RingMaterial.displayName = "RingMaterial";
