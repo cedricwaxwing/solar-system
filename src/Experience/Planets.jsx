@@ -23,33 +23,35 @@ const Planets = () => {
   const planetRefs = useRef({});
 
   useEffect(() => {
-    const loader = new TextureLoader();
-    planetsInfo.forEach((planet) => {
-      const texturePath = `/assets/textures/${planet.name.toLowerCase()}.jpg`;
-      loader.load(texturePath, (texture) => {
-        const planetMesh = planetRefs.current[planet.name];
-        const currentPlanetMesh = planetMesh?.children[0];
-        if (
-          planetMesh &&
-          currentPlanetMesh &&
-          currentPlanetMesh.material &&
-          planet.name === "Sun"
-        ) {
-          currentPlanetMesh.material = new MeshBasicMaterial({
-            map: texture,
-          });
-        } else if (
-          planetMesh &&
-          currentPlanetMesh &&
-          currentPlanetMesh.material
-        ) {
-          currentPlanetMesh.material = new MeshPhysicalMaterial({
-            map: texture,
-          });
-        }
+    if (planetsInfo) {
+      const loader = new TextureLoader();
+      planetsInfo.forEach((planet) => {
+        const texturePath = `/assets/textures/${planet.name.toLowerCase()}.jpg`;
+        loader.load(texturePath, (texture) => {
+          const planetMesh = planetRefs.current[planet.name];
+          const currentPlanetMesh = planetMesh?.children[0];
+          if (
+            planetMesh &&
+            currentPlanetMesh &&
+            currentPlanetMesh.material &&
+            planet.name === "Sun"
+          ) {
+            currentPlanetMesh.material = new MeshBasicMaterial({
+              map: texture,
+            });
+          } else if (
+            planetMesh &&
+            currentPlanetMesh &&
+            currentPlanetMesh.material
+          ) {
+            currentPlanetMesh.material = new MeshPhysicalMaterial({
+              map: texture,
+            });
+          }
+        });
       });
-    });
-  }, [planetRefs.current]);
+    }
+  }, [planetsInfo, planetRefs.current]);
 
   useEffect(() => {
     if (currentPlanet) {
