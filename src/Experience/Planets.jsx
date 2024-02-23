@@ -38,7 +38,11 @@ const Planets = () => {
           currentPlanetMesh.material = new MeshBasicMaterial({
             map: texture,
           });
-        } else {
+        } else if (
+          planetMesh &&
+          currentPlanetMesh &&
+          currentPlanetMesh.material
+        ) {
           currentPlanetMesh.material = new MeshPhysicalMaterial({
             map: texture,
           });
