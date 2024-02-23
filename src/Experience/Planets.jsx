@@ -128,7 +128,7 @@ const Planets = () => {
                     </Icosahedron>
                   </>
                 )}
-                {(tempPlanet === "Saturn" || currentPlanet.name === "Saturn") &&
+                {planet.name === "Saturn" &&
                   planet.ringColors &&
                   planet.ringColors.map((color, index) => {
                     const radius = mapValue(
@@ -152,7 +152,7 @@ const Planets = () => {
                             key={posI}
                             position={position}
                             args={[
-                              Math.random() * 0.05,
+                              Math.random() * 0.05 + 0.01,
                               Math.ceil(Math.random()) * 4 + 1,
                               Math.ceil(Math.random()) * 4 + 1,
                             ]}>
