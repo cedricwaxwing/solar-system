@@ -131,7 +131,7 @@ const Sidebar = () => {
               <>
                 {item && (
                   <animated.div
-                    className='overflow-y-hidden flex flex-col flex-grow'
+                    className='overflow-y-hidden flex flex-col'
                     style={style}>
                     <PlanetStats
                       currentPlanet={currentPlanet}
