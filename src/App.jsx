@@ -4,7 +4,7 @@ import Experience from "./Experience";
 import "./App.css";
 import UI from "./UI";
 import { Suspense, useMemo } from "react";
-import Effects from "./Effects";
+// import Effects from "./Effects";
 
 const controls = {
   up: "up",
@@ -29,7 +29,7 @@ const App = () => {
         <Suspense fallback={null}>
           <Canvas className='fixed left-0 top-0 !w-screen !h-screen !min-h-screen'>
             <Experience />
-            <Effects />
+            {/* <Effects /> */}
           </Canvas>
           <UI />
         </Suspense>

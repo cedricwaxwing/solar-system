@@ -1,10 +1,5 @@
 import { useRef, useEffect, useState, memo } from "react";
-import {
-  TextureLoader,
-  MeshPhysicalMaterial,
-  DoubleSide,
-  MeshBasicMaterial,
-} from "three";
+import { TextureLoader, DoubleSide } from "three";
 import { Icosahedron, Torus } from "@react-three/drei";
 import FakeGlowMaterial from "../FakeGlowMaterial";
 import { planetsInfo } from "../planets";
