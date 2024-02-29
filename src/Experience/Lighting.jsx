@@ -12,7 +12,7 @@ export const Lighting = () => {
       <directionalLight
         position={[-5, 0, 3]}
         scale={100}
-        intensity={3}
+        intensity={7}
         color='#fff'
       />
       <ambientLight intensity={0.05} />

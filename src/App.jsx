@@ -4,8 +4,7 @@ import Experience from "./Experience";
 import "./App.css";
 import UI from "./UI";
 import { Suspense, useMemo } from "react";
-import { EffectComposer, ToneMapping } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import Effects from "./Effects";
 
 const controls = {
   up: "up",
@@ -30,12 +29,7 @@ const App = () => {
         <Suspense fallback={null}>
           <Canvas className='fixed left-0 top-0 !w-screen !h-screen !min-h-screen'>
             <Experience />
-            <EffectComposer>
-              <ToneMapping
-                whitePoint={4}
-                blendFunction={BlendFunction.HARD_LIGHT}
-              />
-            </EffectComposer>
+            <Effects />
           </Canvas>
           <UI />
         </Suspense>

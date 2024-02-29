@@ -16,37 +16,23 @@ import { LayerMaterial, Noise } from "lamina";
 
 const Planets = () => {
   const { setPlanetPositions, currentPlanet } = useFeatures();
-  const [tempPlanet, setTempPlanet] = useState(currentPlanet?.name || null);
   const [currentSpeed, setCurrentSpeed] = useState(0.1);
   const [currentRotation, setCurrentRotation] = useState(0);
+  const [texturesLoaded, setTexturesLoaded] = useState(false);
   const isMobile = useIsMobile();
   const planetRefs = useRef({});
 
   useEffect(() => {
     if (planetsInfo) {
       const loader = new TextureLoader();
-      planetsInfo.forEach((planet) => {
+      planetsInfo.forEach((planet, i) => {
         const texturePath = `/assets/textures/${planet.name.toLowerCase()}.jpg`;
         loader.load(texturePath, (texture) => {
-          const planetMesh = planetRefs.current[planet.name];
-          const currentPlanetMesh = planetMesh?.children[0];
-          if (
-            planetMesh &&
-            currentPlanetMesh &&
-            currentPlanetMesh.material &&
-            planet.name === "Sun"
-          ) {
-            currentPlanetMesh.material = new MeshBasicMaterial({
-              map: texture,
-            });
-          } else if (
-            planetMesh &&
-            currentPlanetMesh &&
-            currentPlanetMesh.material
-          ) {
-            currentPlanetMesh.material = new MeshPhysicalMaterial({
-              map: texture,
-            });
+          planet.texture = texture;
+          if (i === planetsInfo.length - 1) {
+            setTimeout(() => {
+              setTexturesLoaded(true);
+            }, 500);
           }
         });
       });
@@ -65,12 +51,6 @@ const Planets = () => {
   }, [currentPlanet]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setTempPlanet(currentPlanet?.name);
-    }, 4000);
-  }, [currentPlanet?.name]);
-
-  useEffect(() => {
     const planetPositions = [];
     Object.values(planetRefs.current).forEach((planet) => {
       planetPositions.push(planet.children[0].position);
@@ -84,7 +64,7 @@ const Planets = () => {
       (planet) => planet.index === currentPlanet?.index
     ); // only animate current planet to be more performant
     if (curPlanet) {
-      const currentPlanetMesh = planetRefs.current[curPlanet.name].children[0];
+      const currentPlanetMesh = planetRefs.current[curPlanet.name]?.children[0];
       currentPlanetMesh?.rotation.set(currentRotation, t * currentSpeed, 0);
     }
   });
@@ -95,84 +75,95 @@ const Planets = () => {
       <>
         {planetsInfo.map((planet) => {
           return (
-            <group
-              name={planet.name}
-              key={planet.name}
-              ref={(el) => (planetRefs.current[planet.name] = el)}
-              position={[planet.distance, isMobile ? planet.scale * 0.4 : 0, 0]}
-              rotation={[0, 0, 0]}>
-              <Icosahedron
-                key={`planet-${planet.name}`}
-                args={[planet.scale * (!isMobile ? 1.3 : 1), 32, 32]}>
-                {planet.name === "Sun" ? (
-                  <meshBasicMaterial attach='material' side={DoubleSide} />
-                ) : (
-                  <meshPhysicalMaterial
-                    attach='material'
-                    side={DoubleSide}
-                    toneMapped={false}
-                  />
-                )}
-                {planet.name === "Sun" && (
-                  <>
-                    <Icosahedron
-                      args={[planet.scale * 2.5, 32, 32]}
-                      position={[0, 0, 0]}>
-                      <FakeGlowMaterial
-                        attach='material'
-                        glowColor='#ff8c00'
-                        glowInternalRadius={2}
-                        falloff={1.9}
-                        opacity={0.3}
+            <>
+              {texturesLoaded && (
+                <group
+                  name={planet.name}
+                  key={`group-${planet.name}`}
+                  ref={(el) => (planetRefs.current[planet.name] = el)}
+                  position={[
+                    planet.distance,
+                    isMobile ? planet.scale * 0.4 : 0,
+                    0,
+                  ]}
+                  rotation={[0, 0, 0]}>
+                  <Icosahedron
+                    key={`planet-${planet.name}`}
+                    args={[planet.scale * (!isMobile ? 1.3 : 1), 32, 32]}>
+                    {planet.name === "Sun" ? (
+                      <meshBasicMaterial
+                        map={planet.texture}
+                        side={DoubleSide}
                       />
-                    </Icosahedron>
-                  </>
-                )}
-                {planet.name === "Saturn" &&
-                  planet.ringColors &&
-                  planet.ringColors.map((color, index) => {
-                    const radius = mapValue(
-                      index,
-                      0,
-                      planet.ringColors.length,
-                      planet.scale * 1.7,
-                      planet.scale * 2.3
-                    );
-                    const positions = [...Array(6)].map(() => [
-                      Math.min(planet.scale * 2, radius) *
-                        Math.cos(Math.random() * 2 * Math.PI),
-                      Math.random() * 0.3 - 0.15,
-                      Math.max(planet.scale * 2.01, radius) *
-                        Math.sin(Math.random() * 2 * Math.PI),
-                    ]);
-                    return (
+                    ) : (
+                      <meshPhysicalMaterial
+                        map={planet.texture}
+                        side={DoubleSide}
+                        toneMapped={false}
+                      />
+                    )}
+                    {planet.name === "Sun" && (
                       <>
-                        {positions.map((position, posI) => (
-                          <Icosahedron
-                            key={posI}
-                            position={position}
-                            args={[
-                              Math.random() * 0.05 + 0.01,
-                              Math.ceil(Math.random()) * 4 + 1,
-                              Math.ceil(Math.random()) * 4 + 1,
-                            ]}>
-                            <RingMaterial color={color} />
-                          </Icosahedron>
-                        ))}
-                        <Torus
-                          name={`${planet.name}-ring`}
-                          key={index}
-                          scale-z={0.15}
-                          position={[0, 0, 0]}
-                          args={[radius, Math.random() * 0.1 + 0.05, 5, 56]}
-                          rotation-x={-Math.PI / 2}>
-                          <RingMaterial color={color} />
-                        </Torus>
+                        <Icosahedron
+                          args={[planet.scale * 2.5, 32, 32]}
+                          position={[0, 0, 0]}>
+                          <FakeGlowMaterial
+                            attach='material'
+                            glowColor='#ff8c00'
+                            glowInternalRadius={2}
+                            falloff={1.9}
+                            opacity={0.3}
+                          />
+                        </Icosahedron>
                       </>
-                    );
-                  })}
-              </Icosahedron>
-            </group>
+                    )}
+                    {planet.name === "Saturn" &&
+                      planet.ringColors &&
+                      planet.ringColors.map((color, index) => {
+                        const radius = mapValue(
+                          index,
+                          0,
+                          planet.ringColors.length,
+                          planet.scale * 1.7,
+                          planet.scale * 2.3
+                        );
+                        const positions = [...Array(6)].map(() => [
+                          Math.min(planet.scale * 2, radius) *
+                            Math.cos(Math.random() * 2 * Math.PI),
+                          Math.random() * 0.3 - 0.15,
+                          Math.max(planet.scale * 2.01, radius) *
+                            Math.sin(Math.random() * 2 * Math.PI),
+                        ]);
+                        return (
+                          <>
+                            {positions.map((position, posI) => (
+                              <Icosahedron
+                                key={posI}
+                                position={position}
+                                args={[
+                                  Math.random() * 0.05 + 0.01,
+                                  Math.ceil(Math.random()) * 4 + 1,
+                                  Math.ceil(Math.random()) * 4 + 1,
+                                ]}>
+                                <RingMaterial color={color} />
+                              </Icosahedron>
+                            ))}
+                            <Torus
+                              name={`${planet.name}-ring`}
+                              key={index}
+                              scale-z={0.15}
+                              position={[0, 0, 0]}
+                              args={[radius, Math.random() * 0.1 + 0.05, 5, 56]}
+                              rotation-x={-Math.PI / 2}>
+                              <RingMaterial color={color} />
+                            </Torus>
+                          </>
+                        );
+                      })}
+                  </Icosahedron>
+                </group>
+              )}
+            </>
           );
         })}
       </>
